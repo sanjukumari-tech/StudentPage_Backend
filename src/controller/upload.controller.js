@@ -1,22 +1,22 @@
 import Submission from "../models/upload.model.js"
+import express from "express";
+// import Submission from "../models/Submission.js";
+import path from "path";
+import fs from "fs";
+
+const router = express.Router();
+
+
 export const upload = async (req, res) => {
   try {
-    const { userId, question, answer, fileUrl, link, submissionType } = req.body;
-      const senderId = req.user._id;
-      
-    const newSubmission = new Submission({
-      userId,
-      question,
-      answer,
-      fileUrl,
-      link,
-      submissionType,
-    });
+    const { title, description, studentName, studentId } = req.body;
+    const attachment = req.file?.filename;
 
-    await newSubmission.save();
-    res.status(201).json({ message: 'Submission successful', submission: newSubmission });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Submission failed' });
-}
+    const submission = new Submission({ title, description, studentName, studentId, attachment });
+    await submission.save();
+    res.status(201).json(submission);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+
 }
